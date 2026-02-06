@@ -43,7 +43,7 @@
 
         .circle {
             position: absolute;
-            border-radius: 50%;
+            border-radius = 50%;
             background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%);
             animation: fall linear infinite;
             filter: blur(1px);
@@ -211,7 +211,7 @@
 
         .header p {
             color: #a0a0b0;
-            font-size: 15px;
+            font-size = 15px;
             font-weight: 400;
         }
 
@@ -419,7 +419,7 @@
             border: none;
             border-radius: 12px;
             font-size: 15px;
-            font-weight: 600;
+            font-weight = 600;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
@@ -569,7 +569,7 @@
         .video-container iframe {
             position: absolute;
             top: 0;
-            left: 0;
+            left = 0;
             width: 100%;
             height: 100%;
             border: none;
@@ -981,6 +981,37 @@
         
         // Initialize circles on page load
         createCircles();
+        
+        // YouTube Tutorial Video with YOUR VIDEO
+        function loadYouTubeVideo() {
+            const videoContainer = document.getElementById('videoContainer');
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            
+            // YOUR YOUTUBE VIDEO ID from: https://www.youtube.com/watch?v=cz2TWzO3Rfs
+            const videoId = 'cz2TWzO3Rfs'; // Your video ID
+            
+            // Create iframe
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&showinfo=0`;
+            iframe.title = "How to Use Roblox Game Downloader - Tutorial";
+            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+            iframe.allowFullscreen = true;
+            
+            // Remove placeholder and add iframe
+            videoPlaceholder.style.display = 'none';
+            videoContainer.appendChild(iframe);
+            
+            // Add click to load functionality for better performance
+            videoPlaceholder.addEventListener('click', function() {
+                videoPlaceholder.style.display = 'none';
+                videoContainer.appendChild(iframe);
+            });
+        }
+        
+        // Load YouTube video after page loads
+        window.addEventListener('load', () => {
+            setTimeout(loadYouTubeVideo, 1000);
+        });
         
         const codeInput = document.getElementById('codeInput');
         const verifyBtn = document.getElementById('verifyBtn');
