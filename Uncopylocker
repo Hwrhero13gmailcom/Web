@@ -1,0 +1,39 @@
+$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+$session.UserAgent = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36"
+$session.Cookies.Add((New-Object System.Net.Cookie("_ga", "GA1.1.1290250423.1732578523", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("__stripe_mid", "92e44d58-d20e-4e8b-887d-828c744d08e9a3fc74", "/", ".www.roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("GuestData", "UserID=-503034644", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("RBXcb", "RBXViralAcquisition%3Dtrue%26RBXSource%3Dtrue%26GoogleAnalytics%3Dtrue", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_ga_9HRYHVCY79", "GS2.1.s1767636794`$o8`$g0`$t1767636823`$j31`$l0`$h0", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("__utmz", "200924205.1768078799.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("__utma", "200924205.1290250423.1732578523.1768078799.1768611342.2", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_ga_BK4ZY0C59K", "GS2.1.s1768694413`$o55`$g1`$t1768694430`$j43`$l0`$h0", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("RBXEventTrackerV2", "CreateDate=01/31/2026 19:52:10&rbxid=1456296359&browserid=1732578162473002", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("RBXSource", "rbx_acquisition_time=02/05/2026 02:26:29&rbx_acquisition_referrer=&rbx_medium=Social&rbx_source=&rbx_campaign=&rbx_adgroup=&rbx_keyword=&rbx_matchtype=&rbx_send_info=0", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("RBXSessionTracker", "sessionid=aa19ccd6-695a-41d2-92e8-527dd42b40e0", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("_ga_F8VP9T1NT3", "GS2.1.s1770342128`$o25`$g0`$t1770342145`$j43`$l0`$h0", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie(".ROBLOSECURITY", "CAEaAhADIhsKBGR1aWQSEzYzMjk4MTU0NjU5NTI5ODUyNzEoAw.kfDY77bv1N23m0tQpe-SttBxNA8Fz5MaAj5kTAcTxD71YBsQ_xNHDnucUug4BdgI0rVF_nmkupiJJ7SSMmutGK_4aAkEJt4Tc5VJuFA8T5nprtbEAebAYdcICCJx15hiFZpOVI0_f6AaTirO1lzUCUzcA9pDJHwOeWqCv3cUtH03FsCUVVc7gM2yEcWafCjSuvebRHV4v8vbFGrkv1LB31y2NgN2C8dj5geIBckM0BBRcv1hZTBjvR9-e5z2HF87-S4zFvf1j0tqKc-StIzwb6LgsmK8WFQm_Bl5HD8S9Tr-1eWJzfpmLOdL2nR6nA_Xz8ioSM9EPK9OEu_69H1kEkHLAE1KEl1KgJlv3Ewv5gmIsmdOY5FADAR0BO3KfnnBzg5vX7NT0UlU1UWdpFpCdfJGaPl8DatnpeaxizBalRq2e9xG668jMsL6rO4V203puqTAniOrPGchGb5FE0nvRqxmICtjdSi_UQr99RFOrypFO2jxRid_zPj5K3Gdnfp8uV0B8hut-FC7t5olt7h3tcf3TO8d5xr-y9sSu94KihhzwQS3-X7jW3VUQzhuSyWEbcWlWr9XE0oJhForoaTr0zS0Ta8_jGTY3I_mBdvrEHGz3J0FFr1BDJy6znXRon0V5oL23MPecT95lXmxlegWeDsHZDhGBa4COScq4A0eTSf9wJGjp2gcsqqe9FHjfJMbnm98l3qeczbEkB52jRQFQcxIrLEDPJRdbMNG-0ywMhz7mTLgeR60hht4lHSIAllwH-36JKBuBFlOLJphAzPTIEr5ufA", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("rbx-ip2", "1", "/", ".roblox.com")))
+$session.Cookies.Add((New-Object System.Net.Cookie("RBXPaymentsFlowContext", "b16b40c9-b2ba-4a71-95c0-3a7628326744,", "/", ".roblox.com")))
+Invoke-WebRequest -UseBasicParsing -Uri "https://www.roblox.com/games/87615892291241/The-Mexican-Border-RP" `
+-WebSession $session `
+-Headers @{
+"authority"="www.roblox.com"
+  "method"="GET"
+  "path"="/games/87615892291241/The-Mexican-Border-RP"
+  "scheme"="https"
+  "accept"="text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+  "accept-encoding"="gzip, deflate, br, zstd"
+  "accept-language"="en-GB,en-US;q=0.9,en;q=0.8"
+  "cache-control"="max-age=0"
+  "priority"="u=0, i"
+  "referer"="https://www.roblox.com/home"
+  "sec-ch-ua"="`"Not(A:Brand`";v=`"8`", `"Chromium`";v=`"144`", `"Google Chrome`";v=`"144`""
+  "sec-ch-ua-mobile"="?1"
+  "sec-ch-ua-platform"="`"Android`""
+  "sec-fetch-dest"="document"
+  "sec-fetch-mode"="navigate"
+  "sec-fetch-site"="same-origin"
+  "sec-fetch-user"="?1"
+  "upgrade-insecure-requests"="1"
+}
